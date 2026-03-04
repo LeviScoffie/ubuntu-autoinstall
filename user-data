@@ -1,0 +1,83 @@
+#cloud-config
+autoinstall:
+  version: 1
+
+  # --- Language & Keyboard ---
+  locale: en_US.UTF-8
+  keyboard:
+    layout: us
+
+  # --- Your Identity ---
+  identity:
+    hostname: hp-amd-7-ryzen
+    username: leviscoffie
+    password: "$6$.ukLEjY3a1ffoJgI$cDdg6imAqwRSNS39eAEL0aLqegEhawLIxjGw1s9X12H5br9ByPuMlWnx9yItlJPMPSZIIzZD5F4TyFIbKhiXZ1"
+
+  # --- Timezone ---
+  timezone: Africa/Nairobi
+
+  # --- Disk Setup (WIPES EVERYTHING) ---
+  storage:
+    layout:
+      name: lvm
+      match:
+        size: largest
+
+  # --- Snaps ---
+  snaps:
+    - name: spotify
+      classic: false
+    - name: obsidian
+      classic: true
+    - name: code
+      classic: true
+    - name: node
+      classic: true
+    - name: docker
+      classic: false
+    - name: slack
+      classic: false
+    - name: telegram-desktop
+      classic: false
+    - name: discord
+      classic: false
+    - name: chromium
+      classic: false
+    - name: obs-studio
+      classic: false
+    - name: gimp
+      classic: false
+    - name: postman
+      classic: false
+    - name: alacritty
+      classic: true
+
+  # --- Packages to Install ---
+  packages:
+    - git
+    - curl
+    - wget
+    - htop
+    - vim
+    - openssh-server
+    - build-essential
+    - net-tools
+    - ufw
+    - nano
+
+  # --- Commands to Run After Installation ---
+  late-commands:
+    - curtin in-target -- systemctl enable ssh
+    - curtin in-target -- ufw allow ssh
+    - curtin in-target -- ufw enable
+    - curtin in-target -- bash -c "curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg"
+    - curtin in-target -- bash -c "echo 'deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main' > /etc/apt/sources.list.d/brave-browser-release.list"
+    - curtin in-target -- apt update
+    - curtin in-target -- apt install -y brave-browser
+    - curtin in-target -- bash -c "wget -O /tmp/protonvpn.deb https://repo2.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.3-3_all.deb"
+    - curtin in-target -- dpkg -i /tmp/protonvpn.deb
+    - curtin in-target -- apt update
+    - curtin in-target -- apt install -y proton-vpn-gnome-desktop
+
+  # --- Updates ---
+  updates: security
